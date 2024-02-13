@@ -1,0 +1,34 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: >
+  todo-app
+  - Serverless Functions for GET/PUT/POST/DELETE
+  - UI Leptos WASM in an S3 bucket
+
+Globals:
+  Function:
+    MemorySize: 128
+    Architectures: ["arm64"]
+    Handler: bootstrap
+    Runtime: provided.al2
+    Timeout: 5
+    Tracing: Active
+    LoggingConfig:
+      LogFormat: JSON
+
+Resources:
+  TodoGetListFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: target/lambda/get-todos
+      Events:
+        CatchAll:
+          Type: Api
+          Properties:
+            Path: /get-todos
+            Method: get
+
+Outputs:
+  TodoGetListFunctionAPI:
+    Description: "API [get-todos] URL:"
+    Value: !Sub "https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/get-todos"

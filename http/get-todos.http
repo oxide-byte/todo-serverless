@@ -1,0 +1,4 @@
+
+GET https://seacc5zq0b.execute-api.eu-west-1.amazonaws.com/
+
+Accept: application/json

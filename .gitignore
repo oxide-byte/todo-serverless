@@ -1,0 +1,10 @@
+# IntelliJ
+*.iml
+/.idea
+
+# Rust Build
+/**/target
+/**/dist
+
+# AWS
+/.aws-sam
