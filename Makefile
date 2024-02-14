@@ -42,3 +42,6 @@ deploy-api:
 		then sam deploy --stack-name $(STACK_NAME); \
 		else sam deploy -g --stack-name $(STACK_NAME); \
 	fi
+
+clean:
+	sam delete

@@ -20,6 +20,7 @@ Resources:
   TodoGetListFunction:
     Type: AWS::Serverless::Function
     Properties:
+      Role: !GetAtt TodoExecutionRole.Arn
       CodeUri: target/lambda/get-todos
       Events:
         CatchAll:
@@ -27,6 +28,41 @@ Resources:
           Properties:
             Path: /get-todos
             Method: get
+
+
+  TodoDB:
+    Type: AWS::Serverless::SimpleTable
+    Properties:
+      PrimaryKey:
+        Name: id
+        Type: String
+      ProvisionedThroughput:
+        ReadCapacityUnits: 2
+        WriteCapacityUnits: 2
+      TableName: TodoTable
+
+  TodoExecutionRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: lambda.amazonaws.com
+            Action: "sts:AssumeRole"
+      Policies:
+        - PolicyName: TodoAccessPolicy
+          PolicyDocument:
+            Version: "2012-10-17"
+            Statement:
+              - Effect: Allow
+                Action:
+                  - dynamodb:GetItem
+                  - dynamodb:PutItem
+                  - dynamodb:UpdateItem
+                  - dynamodb:DeleteItem
+                Resource: "arn:aws:dynamodb:*:*:table/TodoTable"
 
 Outputs:
   TodoGetListFunctionAPI:
