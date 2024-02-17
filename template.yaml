@@ -28,7 +28,104 @@ Resources:
           Properties:
             Path: /get-todos
             Method: get
+      Policies:
+        - PolicyName: LambdaLogging
+          PolicyDocument:
+            Version: "2012-10-17"
+            Statement:
+              - Effect: Allow
+                Action:
+                  - logs:CreateLogStream
+                  - logs:PutLogEvents
+                Resource: !GetAtt TodoLogGroup.Arn
 
+  TodoGetItemFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      Role: !GetAtt TodoExecutionRole.Arn
+      CodeUri: target/lambda/get-todo
+      Events:
+        CatchAll:
+          Type: Api
+          Properties:
+            Path: /get-todo/{id}
+            Method: get
+      Policies:
+        - PolicyName: LambdaLogging
+          PolicyDocument:
+            Version: "2012-10-17"
+            Statement:
+              - Effect: Allow
+                Action:
+                  - logs:CreateLogStream
+                  - logs:PutLogEvents
+                Resource: !GetAtt TodoLogGroup.Arn
+
+  TodoAddItemFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      Role: !GetAtt TodoExecutionRole.Arn
+      CodeUri: target/lambda/add-todo
+      Events:
+        CatchAll:
+          Type: Api
+          Properties:
+            Path: /add-todo
+            Method: post
+      Policies:
+        - PolicyName: LambdaLogging
+          PolicyDocument:
+            Version: "2012-10-17"
+            Statement:
+              - Effect: Allow
+                Action:
+                  - logs:CreateLogStream
+                  - logs:PutLogEvents
+                Resource: !GetAtt TodoLogGroup.Arn
+
+  TodoEditItemFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      Role: !GetAtt TodoExecutionRole.Arn
+      CodeUri: target/lambda/edit-todo
+      Events:
+        CatchAll:
+          Type: Api
+          Properties:
+            Path: /edit-todo
+            Method: put
+      Policies:
+        - PolicyName: LambdaLogging
+          PolicyDocument:
+            Version: "2012-10-17"
+            Statement:
+              - Effect: Allow
+                Action:
+                  - logs:CreateLogStream
+                  - logs:PutLogEvents
+                Resource: !GetAtt TodoLogGroup.Arn
+
+  TodoDeleteItemFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      Role: !GetAtt TodoExecutionRole.Arn
+      CodeUri: target/lambda/delete-todo
+      Events:
+        CatchAll:
+          Type: Api
+          Properties:
+            Path: /delete-todo
+            Method: delete
+      Policies:
+        - PolicyName: LambdaLogging
+          PolicyDocument:
+            Version: "2012-10-17"
+            Statement:
+              - Effect: Allow
+                Action:
+                  - logs:CreateLogStream
+                  - logs:PutLogEvents
+                Resource: !GetAtt TodoLogGroup.Arn
 
   TodoDB:
     Type: AWS::Serverless::SimpleTable
@@ -63,6 +160,12 @@ Resources:
                   - dynamodb:UpdateItem
                   - dynamodb:DeleteItem
                 Resource: "arn:aws:dynamodb:*:*:table/TodoTable"
+
+  TodoLogGroup:
+    Type: AWS::Logs::LogGroup
+    Properties:
+      LogGroupName: /todo/log/group
+      RetentionInDays: 7
 
 Outputs:
   TodoGetListFunctionAPI:

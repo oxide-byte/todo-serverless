@@ -1,0 +1,30 @@
+version: '3.8'
+
+services:
+  # https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/DynamoDBLocal.DownloadingAndRunning.html
+  dynamodb-local:
+    command: "-jar DynamoDBLocal.jar -sharedDb -dbPath ./data"
+    image: "amazon/dynamodb-local:latest"
+    container_name: dynamodb-local
+    environment:
+      AWS_ACCESS_KEY_ID: "DEMO"
+      AWS_SECRET_ACCESS_KEY: "DEMO"
+      AWS_SESSION_TOKEN: "DEMO"
+      AWS_DEFAULT_REGION: "eu-west-1"
+    ports:
+      - "8000:8000"
+    volumes:
+      - "./docker/dynamodb:/home/dynamodblocal/data"
+    working_dir: /home/dynamodblocal
+
+  dynamodb-admin:
+    image: aaronshaf/dynamodb-admin
+    ports:
+      - "8001:8001"
+    environment:
+      DYNAMO_ENDPOINT: "http://dynamodb-local:8000"
+      AWS_REGION: "eu-west-1"
+      AWS_ACCESS_KEY_ID: "DEMO"
+      AWS_SECRET_ACCESS_KEY: "DEMO"
+    depends_on:
+      - dynamodb-local

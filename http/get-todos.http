@@ -1,4 +1,9 @@
+GET https://f84fuz51qf.execute-api.eu-west-1.amazonaws.com/Prod/get-todos
 
-GET https://seacc5zq0b.execute-api.eu-west-1.amazonaws.com/
+Accept: application/json
+
+###
+
+GET https://f84fuz51qf.execute-api.eu-west-1.amazonaws.com/Prod/get-todo/jjjjj
 
 Accept: application/json
