@@ -1,5 +1,4 @@
 use std::collections::HashMap;
-use aws_config::{SdkConfig};
 use aws_sdk_dynamodb::{Client, Config};
 use aws_sdk_dynamodb::types::AttributeValue;
 use tracing::info;

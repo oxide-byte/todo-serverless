@@ -8,8 +8,10 @@ use todo_api::service::todo_service::add_todo;
 async fn main() -> Result<(), Error> {
 
     setup_tracing();
-    let config = aws_config::load_defaults(BehaviorVersion::latest()).await;
-    lambda_http::run(service_fn(|event: Request| add_todo(config.clone(), event))).await?;
 
-    Ok(())
+    let config = aws_config::load_defaults(BehaviorVersion::latest()).await;
+    let dynamo_config = aws_sdk_dynamodb::config::Builder::from(&config).build();
+
+    lambda_http::run(service_fn(|event: Request| add_todo(dynamo_config.clone(), event))).await
+
 }

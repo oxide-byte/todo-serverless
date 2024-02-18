@@ -8,3 +8,4 @@
 
 # AWS
 /.aws-sam
+/docker/dynamodb/shared-local-instance.db

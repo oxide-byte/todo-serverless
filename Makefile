@@ -28,7 +28,9 @@ endif
 ifeq (,$(shell which cargo))
 	$(error "Could not found Cargo, please install it")
 endif
-	cargo install trunk
+ifeq (,$(shell which trunk))
+	$(error "Could not found Trunk, please install it")
+endif
 	cargo install --locked wasm-bindgen-cli
 
 build-api:

@@ -15,6 +15,9 @@ Globals:
     Tracing: Active
     LoggingConfig:
       LogFormat: JSON
+      ApplicationLogLevel: INFO
+      LogGroup: TodoLogGroup
+      SystemLogLevel: INFO
 
 Resources:
   TodoGetListFunction:
@@ -26,18 +29,8 @@ Resources:
         CatchAll:
           Type: Api
           Properties:
-            Path: /get-todos
+            Path: /
             Method: get
-      Policies:
-        - PolicyName: LambdaLogging
-          PolicyDocument:
-            Version: "2012-10-17"
-            Statement:
-              - Effect: Allow
-                Action:
-                  - logs:CreateLogStream
-                  - logs:PutLogEvents
-                Resource: !GetAtt TodoLogGroup.Arn
 
   TodoGetItemFunction:
     Type: AWS::Serverless::Function
@@ -48,18 +41,8 @@ Resources:
         CatchAll:
           Type: Api
           Properties:
-            Path: /get-todo/{id}
+            Path: /{id}
             Method: get
-      Policies:
-        - PolicyName: LambdaLogging
-          PolicyDocument:
-            Version: "2012-10-17"
-            Statement:
-              - Effect: Allow
-                Action:
-                  - logs:CreateLogStream
-                  - logs:PutLogEvents
-                Resource: !GetAtt TodoLogGroup.Arn
 
   TodoAddItemFunction:
     Type: AWS::Serverless::Function
@@ -70,18 +53,8 @@ Resources:
         CatchAll:
           Type: Api
           Properties:
-            Path: /add-todo
+            Path: /
             Method: post
-      Policies:
-        - PolicyName: LambdaLogging
-          PolicyDocument:
-            Version: "2012-10-17"
-            Statement:
-              - Effect: Allow
-                Action:
-                  - logs:CreateLogStream
-                  - logs:PutLogEvents
-                Resource: !GetAtt TodoLogGroup.Arn
 
   TodoEditItemFunction:
     Type: AWS::Serverless::Function
@@ -92,18 +65,8 @@ Resources:
         CatchAll:
           Type: Api
           Properties:
-            Path: /edit-todo
+            Path: /
             Method: put
-      Policies:
-        - PolicyName: LambdaLogging
-          PolicyDocument:
-            Version: "2012-10-17"
-            Statement:
-              - Effect: Allow
-                Action:
-                  - logs:CreateLogStream
-                  - logs:PutLogEvents
-                Resource: !GetAtt TodoLogGroup.Arn
 
   TodoDeleteItemFunction:
     Type: AWS::Serverless::Function
@@ -114,18 +77,8 @@ Resources:
         CatchAll:
           Type: Api
           Properties:
-            Path: /delete-todo
+            Path: /{id}
             Method: delete
-      Policies:
-        - PolicyName: LambdaLogging
-          PolicyDocument:
-            Version: "2012-10-17"
-            Statement:
-              - Effect: Allow
-                Action:
-                  - logs:CreateLogStream
-                  - logs:PutLogEvents
-                Resource: !GetAtt TodoLogGroup.Arn
 
   TodoDB:
     Type: AWS::Serverless::SimpleTable
@@ -154,17 +107,36 @@ Resources:
             Version: "2012-10-17"
             Statement:
               - Effect: Allow
-                Action:
-                  - dynamodb:GetItem
-                  - dynamodb:PutItem
-                  - dynamodb:UpdateItem
-                  - dynamodb:DeleteItem
+                Action: [
+                "dynamodb:DescribeTable",
+                "dynamodb:Query",
+                "dynamodb:Scan",
+                "dynamodb:GetItem",
+                "dynamodb:DeleteItem",
+                "dynamodb:UpdateItem",
+                "dynamodb:PutItem"
+                ]
                 Resource: "arn:aws:dynamodb:*:*:table/TodoTable"
 
-  TodoLogGroup:
-    Type: AWS::Logs::LogGroup
+  TodoUsagePlan:
+    Type: AWS::ApiGateway::UsagePlan
     Properties:
-      LogGroupName: /todo/log/group
+      ApiStages:
+        - ApiId: !Ref ServerlessRestApi
+          Stage: !Ref ServerlessRestApiProdStage
+      Description: Todo usage plan
+      Quota:
+        Limit: 1000
+        Period: MONTH
+      Throttle:
+        BurstLimit: 10
+        RateLimit: 10
+      UsagePlanName: TodoUsagePlan
+
+  todoLogGroup:
+    Type: 'AWS::Logs::LogGroup'
+    Properties:
+      LogGroupName: TodoLogGroup
       RetentionInDays: 7
 
 Outputs:

@@ -1,9 +1,31 @@
-GET https://f84fuz51qf.execute-api.eu-west-1.amazonaws.com/Prod/get-todos
+GET https://wbmmjp2y6e.execute-api.eu-west-1.amazonaws.com/Prod/
 
-Accept: application/json
+####
+
+POST https://wbmmjp2y6e.execute-api.eu-west-1.amazonaws.com/Prod/
+Content-Type: application/json
+
+{
+  "id": "",
+  "title": "title",
+  "description": "description"
+}
 
 ###
 
-GET https://f84fuz51qf.execute-api.eu-west-1.amazonaws.com/Prod/get-todo/jjjjj
+PUT https://wbmmjp2y6e.execute-api.eu-west-1.amazonaws.com/Prod/
+Content-Type: application/json
 
-Accept: application/json
+{
+"id": "c31ef73a-fbfd-4438-b261-113cefb51bad",
+"title": "title (Updated)",
+"description": "description (Updated)"
+}
+
+###
+
+GET https://wbmmjp2y6e.execute-api.eu-west-1.amazonaws.com/Prod/c31ef73a-fbfd-4438-b261-113cefb51bad
+
+###
+
+DELETE https://wbmmjp2y6e.execute-api.eu-west-1.amazonaws.com/Prod/c31ef73a-fbfd-4438-b261-113cefb51bad

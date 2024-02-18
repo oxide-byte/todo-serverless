@@ -11,7 +11,8 @@ async fn main() -> Result<(), Error> {
 
     // "message": "get_todo [/Prod/get-todo/tttttt]"
     let config = aws_config::load_defaults(BehaviorVersion::latest()).await;
-    lambda_http::run(service_fn(|event: Request| get_todo(config.clone(), event))).await?;
+    let dynamo_config = aws_sdk_dynamodb::config::Builder::from(&config).build();
 
-    Ok(())
+    lambda_http::run(service_fn(|event: Request| get_todo(dynamo_config.clone(), event))).await
+
 }

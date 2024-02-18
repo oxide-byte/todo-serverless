@@ -9,7 +9,8 @@ async fn main() -> Result<(), Error> {
     setup_tracing();
 
     let config = aws_config::load_defaults(BehaviorVersion::latest()).await;
-    lambda_http::run(service_fn(|event: Request| get_todos(config.clone(), event))).await?;
+    let dynamo_config = aws_sdk_dynamodb::config::Builder::from(&config).build();
 
-    Ok(())
+    lambda_http::run(service_fn(|event: Request| get_todos(dynamo_config.clone(), event))).await
+
 }
