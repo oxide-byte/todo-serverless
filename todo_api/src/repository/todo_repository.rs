@@ -65,13 +65,15 @@ impl TodoRepository {
         let id = AttributeValue::S(todo.id);
         let title = AttributeValue::S(todo.title);
         let description = AttributeValue::S(todo.description);
+        let created = AttributeValue::N(todo.created.timestamp_millis().to_string());
 
         let request = self.client
             .put_item()
             .table_name(&self.table_name)
             .item("id", id)
             .item("title", title)
-            .item("description", description);
+            .item("description", description)
+            .item("created", created);
 
         request.send().await?;
 
@@ -115,7 +117,9 @@ fn todo_mapper(data: HashMap<String, AttributeValue>) -> Todo {
     let id = data.get("id").unwrap().as_s().unwrap().clone();
     let title = data.get("title").unwrap().as_s().unwrap().clone();
     let description = data.get("description").unwrap().as_s().unwrap().clone();
-    Todo {id, title, description}
+    let created = data.get("created").unwrap().as_n().unwrap().clone();
+    let created_n = created.parse::<i64>().expect(&*format!("unparsable DATE/TIME for {}", id));
+    Todo {id, title, description, created: chrono::DateTime::from_timestamp_millis(created_n).unwrap()}
 }
 
 fn todo_list_mapper(data: Vec<HashMap<String, AttributeValue>>) -> Vec<Todo> {
@@ -126,6 +130,7 @@ fn todo_list_mapper(data: Vec<HashMap<String, AttributeValue>>) -> Vec<Todo> {
 mod tests {
     use std::env;
     use aws_sdk_dynamodb::*;
+    use chrono::Utc;
     use crate::models::Todo;
     use crate::repository::todo_repository::TodoRepository;
 
@@ -161,7 +166,7 @@ mod tests {
 
         let todo_repository = TodoRepository::new(client).await;
 
-        let mut todo = Todo::new(String::from("Title"), String::from("Description"));
+        let mut todo = Todo::new(String::from("Title"), String::from("Description"), Utc::now());
         todo.id = String::from("1");
 
         todo_repository.insert_todo(todo).await.unwrap();
@@ -174,7 +179,7 @@ mod tests {
 
         let todo_repository = TodoRepository::new(client).await;
 
-        let mut todo = Todo::new(String::from("Title (updated)"), String::from("Description (updated)"));
+        let mut todo = Todo::new(String::from("Title (updated)"), String::from("Description (updated)"), Utc::now());
         todo.id = String::from("1");
 
         todo_repository.update_todo(todo).await.unwrap();

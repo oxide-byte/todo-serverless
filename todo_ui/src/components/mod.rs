@@ -4,6 +4,7 @@ use crate::models::Todo;
 pub mod app;
 pub mod todo_modal;
 pub mod todo_list_item;
+pub mod todo_service;
 
 pub type TodoListSignal = RwSignal<Vec<Todo>>;
 pub type ShowTodoModalSignal = RwSignal<bool>;

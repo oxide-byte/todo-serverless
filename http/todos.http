@@ -1,0 +1,44 @@
+
+OPTIONS https://lhe1zddjih.execute-api.eu-west-1.amazonaws.com/Prod/
+
+
+####
+
+
+GET https://lhe1zddjih.execute-api.eu-west-1.amazonaws.com/Prod/
+
+####
+
+
+POST https://lhe1zddjih.execute-api.eu-west-1.amazonaws.com/Prod/
+Content-Type: application/json
+
+{
+  "id": "",
+  "title": "title",
+  "description": "description",
+  "created": "2024-02-19T19:20:54.702Z"
+}
+
+###
+
+
+PUT https://lhe1zddjih.execute-api.eu-west-1.amazonaws.com/Prod/
+Content-Type: application/json
+
+{
+  "id": "c31ef73a-fbfd-4438-b261-113cefb51bad",
+  "title": "title (Updated)",
+  "description": "description (Updated)",
+  "created": "2024-02-19T19:20:54.702Z"
+}
+
+###
+
+
+GET https://lhe1zddjih.execute-api.eu-west-1.amazonaws.com/Prod/c31ef73a-fbfd-4438-b261-113cefb51bad
+
+###
+
+
+DELETE https://lhe1zddjih.execute-api.eu-west-1.amazonaws.com/Prod/47e431f8-59b8-458b-8acd-52e08a0faa4f

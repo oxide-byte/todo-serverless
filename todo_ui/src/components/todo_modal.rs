@@ -1,3 +1,4 @@
+use chrono::Utc;
 use leptos::*;
 use leptos::ev::MouseEvent;
 use leptos::html::{Input, Textarea};
@@ -18,7 +19,7 @@ pub fn TodoModal(#[prop(into)] on_add: Callback<Todo>, #[prop(into)] on_cancel: 
         let title = input_title().expect("<input> to exist").value();
         let description = input_description().expect("<textarea> to exist").value();
         let id = if todo_item.get().is_some() {todo_item.get().unwrap().id} else {Uuid::new_v4().to_string()};
-        let created = if todo_item.get().is_some() {todo_item.get().unwrap().created} else {instant::Instant::now()};
+        let created = if todo_item.get().is_some() {todo_item.get().unwrap().created} else {Utc::now()};
 
         let new_item = Todo{
             id,
@@ -26,6 +27,9 @@ pub fn TodoModal(#[prop(into)] on_add: Callback<Todo>, #[prop(into)] on_cancel: 
             description,
             created
         };
+
+        // let json = serde_json::to_string(&new_item).expect("Serialization failed");
+        // web_sys::console::log_1(&format!("{}",json).into());
 
         on_add(new_item);
     };

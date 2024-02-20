@@ -3,13 +3,24 @@ use crate::components::{EditTodoSignal, ShowTodoModalSignal, TodoListSignal};
 use crate::models::Todo;
 use crate::components::todo_modal::TodoModal;
 use crate::components::todo_list_item::TodoListItem;
+use crate::components::todo_service::TodoService;
 
 #[component]
 pub fn App() -> impl IntoView {
-
+    let todo_service = TodoService::new();
     let todos:TodoListSignal = create_rw_signal(Vec::new());
     let show_modal: ShowTodoModalSignal = create_rw_signal(false);
     let edit_todo_item: EditTodoSignal = create_rw_signal(None);
+
+    spawn_local(async move {
+        let todos_db = todo_service.get_todos().await;
+        match todos_db {
+            Ok(data) => {todos.set(data)}
+            Err(error) => {
+                web_sys::console::log_1(&format!("ERROR: {}",error).into());
+            }
+        }
+    });
 
     let on_add_todo_event = move |todo: Todo| {
         todos.update(|old|  {

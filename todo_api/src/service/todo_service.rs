@@ -1,4 +1,3 @@
-use std::fmt::format;
 use aws_sdk_dynamodb::Config;
 use lambda_http::{IntoResponse, Response, Request};
 use lambda_http::http::StatusCode;
@@ -250,6 +249,23 @@ mod tests {
         let response = delete_todo(config, request).await;
 
         assert!(response.is_ok());
+    }
+
+    #[test]
+    fn json_to_list() {
+        let json = "[
+        {
+            \"created\": \"2024-02-19T19:20:54.702Z\",
+            \"description\": \"description\",
+            \"id\": \"9e4f98b6-e332-478e-b3d5-6be74e5f97c7\",
+            \"title\": \"title\"
+        }
+        ]";
+
+        let parsed: Vec<Todo> = serde_json::from_str(&json).unwrap();
+
+        assert!(!parsed.is_empty());
+        println!("{:?}", parsed);
     }
 
     async fn create_local_client() -> Config {

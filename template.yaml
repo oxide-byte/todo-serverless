@@ -18,6 +18,24 @@ Globals:
       ApplicationLogLevel: INFO
       LogGroup: TodoLogGroup
       SystemLogLevel: INFO
+  Api:
+    Cors:
+      AllowOrigin: "'http://localhost:8080'"
+      AllowHeaders: "'access-control-allow-headers, access-control-allow-methods, access-control-allow-origin, access-control-allow-credentials, content-type'"
+      AllowMethods: "'PUT, GET, HEAD, POST, DELETE, OPTIONS'"
+      AllowCredentials: "'true'"
+
+    GatewayResponses:
+      DEFAULT_4xx:
+        ResponseParameters:
+          Headers:
+            Access-Control-Expose-Headers: "'WWW-Authenticate'"
+            Access-Control-Allow-Origin: "'*'"
+      DEFAULT_5xx:
+        ResponseParameters:
+          Headers:
+            Access-Control-Expose-Headers: "'WWW-Authenticate'"
+            Access-Control-Allow-Origin: "'*'"
 
 Resources:
   TodoGetListFunction:
@@ -31,6 +49,7 @@ Resources:
           Properties:
             Path: /
             Method: get
+            #RestApiId: !Ref TodoApi
 
   TodoGetItemFunction:
     Type: AWS::Serverless::Function
@@ -79,6 +98,27 @@ Resources:
           Properties:
             Path: /{id}
             Method: delete
+
+  #TodoApi:
+  #  Type: AWS::Serverless::Api
+  #  Properties:
+  #    StageName: prod
+  #    DefinitionBody:
+  #      swagger: "2.0"
+  #      info:
+  #        title: "Todo API"
+  #      paths:
+  #        /:
+  #          get:
+  #            responses:
+  #              "200":
+  #                description: "Successful response"
+  #                headers:
+  #                  Access-Control-Allow-Origin:
+  #                    type: "string"
+  #                    pattern: "*"
+  #                    description: "Enable CORS"
+
 
   TodoDB:
     Type: AWS::Serverless::SimpleTable

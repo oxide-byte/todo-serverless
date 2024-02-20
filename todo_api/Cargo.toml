@@ -16,6 +16,7 @@ tokio = { version = "1.36.0", features = ["full"] }
 tracing = { version = "0.1.40", features = ["log"] }
 tracing-subscriber = { version = "0.3.18", default-features = false, features = ["fmt", "env-filter", "json"] }
 uuid = { version = "1.7.0", features = ["v4"] }
+chrono = { version = "0.4.34", features = ["serde"] }
 
 [features]
 default = ["lambda"]
