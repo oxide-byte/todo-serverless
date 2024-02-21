@@ -17,11 +17,7 @@ pub async fn get_todos(
 
     match todo_repo.get_all().await {
         Ok(todos) => {
-            if todos.is_empty() {
-                Ok(response(StatusCode::NO_CONTENT, json!(todos).to_string()))
-            } else {
-                Ok(response(StatusCode::OK, json!(todos).to_string()))
-            }
+            Ok(response(StatusCode::OK, json!(todos).to_string()))
         }
         Err(e) => {
             tracing::error!("error: {:?}", e);

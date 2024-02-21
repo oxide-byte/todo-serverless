@@ -9,7 +9,6 @@ async fn main() -> Result<(), Error> {
 
     setup_tracing();
 
-    // "message": "get_todo [/Prod/get-todo/tttttt]"
     let config = aws_config::load_defaults(BehaviorVersion::latest()).await;
     let dynamo_config = aws_sdk_dynamodb::config::Builder::from(&config).build();
 

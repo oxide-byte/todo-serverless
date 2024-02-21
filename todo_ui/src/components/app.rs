@@ -7,12 +7,13 @@ use crate::components::todo_service::TodoService;
 
 #[component]
 pub fn App() -> impl IntoView {
-    let todo_service = TodoService::new();
+
     let todos:TodoListSignal = create_rw_signal(Vec::new());
     let show_modal: ShowTodoModalSignal = create_rw_signal(false);
     let edit_todo_item: EditTodoSignal = create_rw_signal(None);
 
     spawn_local(async move {
+        let todo_service = TodoService::new();
         let todos_db = todo_service.get_todos().await;
         match todos_db {
             Ok(data) => {todos.set(data)}
@@ -22,16 +23,43 @@ pub fn App() -> impl IntoView {
         }
     });
 
-    let on_add_todo_event = move |todo: Todo| {
-        todos.update(|old|  {
-            old.retain(|x| x.id != todo.id);
-            old.push(todo);
-            old.sort_by(|a, b| a.created.cmp(&b.created));
+    let callback_add_todo_event = move |todo: Todo| {
+        spawn_local(async move {
+            let todo_service = TodoService::new();
+            let todos_db = todo_service.insert_todo(todo).await;
+            show_modal.set(false);
+            if todos_db.is_ok() {
+                let todo_service = TodoService::new();
+                let todos_db = todo_service.get_todos().await;
+                match todos_db {
+                    Ok(data) => { todos.set(data) }
+                    Err(error) => {
+                        web_sys::console::log_1(&format!("ERROR: {}", error).into());
+                    }
+                }
+            }
         });
-        show_modal.set(false);
     };
 
-    let on_cancel_add_event = move |_| {
+    let callback_edit_todo_event = move |todo: Todo| {
+        spawn_local(async move {
+            let todo_service = TodoService::new();
+            let todos_db = todo_service.edit_todo(todo).await;
+            show_modal.set(false);
+            if todos_db.is_ok() {
+                let todo_service = TodoService::new();
+                let todos_db = todo_service.get_todos().await;
+                match todos_db {
+                    Ok(data) => { todos.set(data) }
+                    Err(error) => {
+                        web_sys::console::log_1(&format!("ERROR: {}", error).into());
+                    }
+                }
+            }
+        });
+    };
+
+    let callback_cancel_add_event = move |_| {
         show_modal.set(false);
     };
 
@@ -41,9 +69,20 @@ pub fn App() -> impl IntoView {
     };
 
     let on_delete_todo_event = move |todo : Todo| {
-        todos.update(|old| {
-            old.retain(|x| x.id != todo.id);
-        })
+        spawn_local(async move {
+            let todo_service = TodoService::new();
+            let todos_db = todo_service.delete_todo(todo.id.clone()).await;
+            if todos_db.is_ok() {
+                let todo_service = TodoService::new();
+                let todos_db = todo_service.get_todos().await;
+                match todos_db {
+                    Ok(data) => { todos.set(data) }
+                    Err(error) => {
+                        web_sys::console::log_1(&format!("ERROR: {}", error).into());
+                    }
+                }
+            }
+        });
     };
 
     let on_edit_todo_event = move |todo : Todo| {
@@ -80,8 +119,9 @@ pub fn App() -> impl IntoView {
 
         <Show when = move || show_modal.get()>
             <TodoModal
-                on_add=on_add_todo_event
-                on_cancel=on_cancel_add_event
+                on_add=callback_add_todo_event
+                on_edit=callback_edit_todo_event
+                on_cancel=callback_cancel_add_event
                 todo=edit_todo_item.get()>
             </TodoModal>
         </Show>

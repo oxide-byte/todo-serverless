@@ -18,12 +18,24 @@ Globals:
       ApplicationLogLevel: INFO
       LogGroup: TodoLogGroup
       SystemLogLevel: INFO
+
+  HttpApi:
+    CorsConfiguration:
+      AllowOrigins:
+        - "*"
+      AllowMethods:
+        - "PUT, GET, HEAD, POST, DELETE, OPTIONS"
+      AllowHeaders:
+        - "access-control-allow-headers, access-control-allow-methods, access-control-allow-origin, access-control-allow-credentials, content-type"
+      MaxAge: 600
+
   Api:
     Cors:
-      AllowOrigin: "'http://localhost:8080'"
+      AllowOrigin: "'*'"
       AllowHeaders: "'access-control-allow-headers, access-control-allow-methods, access-control-allow-origin, access-control-allow-credentials, content-type'"
       AllowMethods: "'PUT, GET, HEAD, POST, DELETE, OPTIONS'"
       AllowCredentials: "'true'"
+      MaxAge: "'600'"
 
     GatewayResponses:
       DEFAULT_4xx:
@@ -49,7 +61,6 @@ Resources:
           Properties:
             Path: /
             Method: get
-            #RestApiId: !Ref TodoApi
 
   TodoGetItemFunction:
     Type: AWS::Serverless::Function
@@ -99,27 +110,6 @@ Resources:
             Path: /{id}
             Method: delete
 
-  #TodoApi:
-  #  Type: AWS::Serverless::Api
-  #  Properties:
-  #    StageName: prod
-  #    DefinitionBody:
-  #      swagger: "2.0"
-  #      info:
-  #        title: "Todo API"
-  #      paths:
-  #        /:
-  #          get:
-  #            responses:
-  #              "200":
-  #                description: "Successful response"
-  #                headers:
-  #                  Access-Control-Allow-Origin:
-  #                    type: "string"
-  #                    pattern: "*"
-  #                    description: "Enable CORS"
-
-
   TodoDB:
     Type: AWS::Serverless::SimpleTable
     Properties:
@@ -157,6 +147,13 @@ Resources:
                 "dynamodb:PutItem"
                 ]
                 Resource: "arn:aws:dynamodb:*:*:table/TodoTable"
+              - Effect: Allow
+                Action: [
+                "logs:CreateLogGroup",
+                "logs:CreateLogStream",
+                "logs:PutLogEvents"
+                ]
+                Resource: "*"
 
   TodoUsagePlan:
     Type: AWS::ApiGateway::UsagePlan
@@ -173,13 +170,51 @@ Resources:
         RateLimit: 10
       UsagePlanName: TodoUsagePlan
 
-  todoLogGroup:
+  TodoLogGroup:
     Type: 'AWS::Logs::LogGroup'
     Properties:
       LogGroupName: TodoLogGroup
       RetentionInDays: 7
 
+  S3Bucket:
+    Type: AWS::S3::Bucket
+    DeletionPolicy: Delete
+    Properties:
+      # REPLACE THIS NAME BY YOUR OWN BUCKET NAME !!!
+      # APPLY ALSO THE NAME IN THE MAKE SCRIPT:
+      #   aws s3 cp ./todo_ui/dist s3://todo-app-demo1/ --recursive
+      BucketName: todo-app-demo1
+      PublicAccessBlockConfiguration:
+        BlockPublicAcls: false
+      OwnershipControls:
+        Rules:
+          - ObjectOwnership: ObjectWriter
+      WebsiteConfiguration:
+        IndexDocument: index.html
+        ErrorDocument: error.html
+
+  BucketPolicy:
+    Type: AWS::S3::BucketPolicy
+    Properties:
+      Bucket: !Ref S3Bucket
+      PolicyDocument:
+        Id: TodoS3Policy
+        Version: 2012-10-17
+        Statement:
+          - Sid: PublicReadForGetBucketObjects
+            Effect: Allow
+            Principal: '*'
+            Action: 's3:GetObject'
+            Resource: !Join
+              - ''
+              - - 'arn:aws:s3:::'
+                - !Ref S3Bucket
+                - /*
+
 Outputs:
   TodoGetListFunctionAPI:
     Description: "API [get-todos] URL:"
     Value: !Sub "https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/get-todos"
+  TodoBucketUrl:
+    Description: "S3 Bucket URL:"
+    Value: !Sub "https://${S3Bucket}.s3.${AWS::Region}.amazonaws.com"

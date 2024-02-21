@@ -7,7 +7,7 @@ ARCH := aarch64-unknown-linux-gnu
 
 api: setup-api build-api deploy-api
 
-ui: setup-ui build-ui
+ui: setup-ui build-ui upload-s3
 
 setup-api:
 ifeq (,$(shell which rustc))
@@ -44,6 +44,9 @@ deploy-api:
 		then sam deploy --stack-name $(STACK_NAME); \
 		else sam deploy -g --stack-name $(STACK_NAME); \
 	fi
+
+upload-s3:
+	aws s3 cp ./todo_ui/dist s3://todo-app-demo1/ --recursive
 
 clean:
 	sam delete
