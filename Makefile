@@ -1,9 +1,10 @@
 STACK_NAME ?= todo-app
 FUNCTIONS := get-todos
+BUCKET_NAME := todo-app-xxx
 
 ARCH := aarch64-unknown-linux-gnu
 
-.PHONY: setup-api build-api deploy-api setup-ui build-ui
+.PHONY: setup-api build-api deploy-api setup-ui build-ui upload-s3
 
 api: setup-api build-api deploy-api
 
@@ -46,7 +47,9 @@ deploy-api:
 	fi
 
 upload-s3:
-	aws s3 cp ./todo_ui/dist s3://todo-app-demo1/ --recursive
+	aws s3 cp ./todo_ui/dist s3://$(BUCKET_NAME)/ --recursive
 
 clean:
+	aws s3 rm s3://$(BUCKET_NAME)/ --recursive
+	aws s3 rb s3://$(BUCKET_NAME)/ --force
 	sam delete

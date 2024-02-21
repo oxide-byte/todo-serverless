@@ -11,7 +11,7 @@ impl TodoService {
 
     pub fn new() -> TodoService {
         TodoService {
-            url: "https://4iua3wx06j.execute-api.eu-west-1.amazonaws.com/Prod/".to_string()
+            url: "https://ecfi31myyc.execute-api.eu-west-1.amazonaws.com/Prod/".to_string()
         }
     }
 

@@ -181,9 +181,9 @@ Resources:
     DeletionPolicy: Delete
     Properties:
       # REPLACE THIS NAME BY YOUR OWN BUCKET NAME !!!
-      # APPLY ALSO THE NAME IN THE MAKE SCRIPT:
-      #   aws s3 cp ./todo_ui/dist s3://todo-app-demo1/ --recursive
-      BucketName: todo-app-demo1
+      # APPLY ALSO THE NAME IN THE [MakeFile]:
+      #   BUCKET_NAME := todo-app-xxx
+      BucketName: todo-app-xxx
       PublicAccessBlockConfiguration:
         BlockPublicAcls: false
       OwnershipControls:
@@ -216,5 +216,5 @@ Outputs:
     Description: "API [get-todos] URL:"
     Value: !Sub "https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/get-todos"
   TodoBucketUrl:
-    Description: "S3 Bucket URL:"
-    Value: !Sub "https://${S3Bucket}.s3.${AWS::Region}.amazonaws.com"
+    Description: "S3 Website Bucket URL:"
+    Value: !Sub "https://${S3Bucket}.s3-website-${AWS::Region}.amazonaws.com"
