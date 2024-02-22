@@ -67,9 +67,9 @@ Here the steps:
     DeletionPolicy: Delete
     Properties:
       # REPLACE THIS NAME BY YOUR OWN BUCKET NAME !!!
-      # APPLY ALSO THE NAME IN THE MAKE SCRIPT:
-      #   aws s3 cp ./todo_ui/dist s3://todo-app-demo1/ --recursive
-      BucketName: todo-app-demo1
+      # APPLY ALSO THE NAME IN THE [MakeFile]:
+      #   BUCKET_NAME := todo-app-xxx
+      BucketName: todo-app-xxx
 ```
 
 2) From Makefile the step: api
@@ -116,7 +116,7 @@ Value               https://XXXXXXXXXXXXXXXXX.s3.eu-west-1.amazonaws.com
 
 Key                 TodoGetListFunctionAPI
 Description         API [get-todos] URL:
-Value               https://ecfi31myyc.execute-api.eu-west-1.amazonaws.com/Prod/get-todos
+Value               https://XXXXXXXXXXXXXXXXX.execute-api.eu-west-1.amazonaws.com/Prod/get-todos
 ```
 
 The points could already be used by CURL or in the folder http some scripts, if you use IntelliJ Ultimate.
@@ -125,7 +125,7 @@ The points could already be used by CURL or in the folder http some scripts, if 
 
 ```
 TodoService {
-    url: "https://4iua3wx06j.execute-api.eu-west-1.amazonaws.com/Prod/".to_string()
+    url: "https://XXXXXXXXXXXXXXXXX.execute-api.eu-west-1.amazonaws.com/Prod/".to_string()
 }
 ```
 
@@ -144,6 +144,82 @@ BUCKET_NAME := todo-demo-xxx
 *CLEAN UP*
 
 When you are finished, you can remove the resources with the step clean in Makefile. Validate the logs, and ensure that all resources have been deleted in connecting to the AWS console.
+
+== Components
+
+Let take a look on the different components created:
+
+=== S3 Bucket
+
+image::.readme-resources/s3.png[]
+
+In the S3 Bucket we would find the uploaded files (HTML, JS, CSS) that forms the static web page.
+
+image::.readme-resources/s3_url.png[]
+
+Looking on the properties, we would also find here the URL to access the application by a web browser.
+
+image::.readme-resources/s3_sam.png[]
+
+You see also a bucket containing the Cloud Formation template uploaded with the SAM commands from Makefile. A link to S3 pricing: https://aws.amazon.com/s3/pricing/
+
+=== Cloud Formation
+
+image::.readme-resources/cloud_formation.png[]
+
+It provides the Todo project description. it could be modified inside AWS, but the changes would not be at that time on your template.yaml
+
+image::.readme-resources/cloud_formation_diagram.png[]
+
+You can also access it with the visual editor to look and modify elements.
+
+=== AWS Lambda
+
+image::.readme-resources/lambda_dashboard.png[]
+
+On the AWS Lambda screen, we see the currently number of Lambda's installed. to mention, we see the current 5 Lambda's only use 15 MB (3MB per Lambda). One advantage of Rust Lambda's, they are compact.
+
+image::.readme-resources/lambda.png[]
+
+In details, we see the lambda's. As we see, the names would change each time you clean and install your SAM, but not when updating a SAM Project. A link to Lambda pricing: https://aws.amazon.com/lambda/pricing/
+
+=== DynamoDB
+
+image::.readme-resources/dynamo_db.png[]
+
+The DynamoDB created and storing the Todo's of the application. A link to the Dynamo pricing: https://aws.amazon.com/dynamodb/pricing/
+
+=== Cloud Watch
+
+image::.readme-resources/cloudwatch_group.png[]
+
+In Cloud Watch the generated Log Group
+
+image::.readme-resources/cloudwatch_log_lambda.png[]
+
+Containing for each function a group of logs
+
+image::.readme-resources/cloudwatch_time_price.png[]
+
+and looking on the log entry, we see the memory and billing duration defining the costs of this single execution. Here also we see 55ms with an allocation of 128MB Memory is competitive. A link to Cloudwatch pricing: https://aws.amazon.com/cloudwatch/pricing/
+
+=== API Gateway
+
+image::.readme-resources/api_gateway.png[]
+
+For the last, take a look on the API Gateway showing the different entry points, linked to the different Lambda functions, and also containing the CORS definition. The API Gateway will also generate costs, see: https://aws.amazon.com/api-gateway/pricing/[]
+
+== Conclusion
+
+This sample was for me the continuation of my Todo series, on Serverless. After the implementation:
+
+* Serverless is not a silver bullet, it is one of many ways to solve a problem. Analyse the problem and choose the right tool. But learning new tools, to know about your options.
+
+* I think I would on a real project favorite CDK (with TypeScript) over SAM for creating and deploying the Cloud Formation. I used AWS Code Whisperer to support me on creating the template.yaml, with TypeScript I would be supported by auto-complete by my IDE.
+
+* The Frontend part I would not store on S3 but looking for solutions to avoid the CORS problems. Also in mindset that Leptos provide a better solution with server side rendering.
+
+* I will keep my researches and studies with Rust as language for Lambda's. But today already a lot of Lambda functions are written in other languages and these also search for solutions to reduce the cold start and to reduce costs. So your Serverless journey is not bound to a language and keep an eye on projects like https://github.com/awslabs/llrt[LLRT].
 
 == Disclaimer
 

@@ -50,6 +50,6 @@ upload-s3:
 	aws s3 cp ./todo_ui/dist s3://$(BUCKET_NAME)/ --recursive
 
 clean:
-	aws s3 rm s3://$(BUCKET_NAME)/ --recursive
-	aws s3 rb s3://$(BUCKET_NAME)/ --force
+	aws s3 rm s3://$(BUCKET_NAME)/ --recursive; true
+	aws s3 rb s3://$(BUCKET_NAME)/ --force; true
 	sam delete
