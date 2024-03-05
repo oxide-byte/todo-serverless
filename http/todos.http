@@ -1,16 +1,16 @@
 
-OPTIONS https://touijxhyv6.execute-api.eu-west-1.amazonaws.com/Prod/
+OPTIONS https://XXXXXXXXXX.execute-api.eu-west-1.amazonaws.com/Prod/
 
 
 ####
 
 
-GET https://touijxhyv6.execute-api.eu-west-1.amazonaws.com/Prod/
+GET https://XXXXXXXXXX.execute-api.eu-west-1.amazonaws.com/Prod/
 
 ####
 
 
-POST https://touijxhyv6.execute-api.eu-west-1.amazonaws.com/Prod/
+POST https://XXXXXXXXXX.execute-api.eu-west-1.amazonaws.com/Prod/
 Content-Type: application/json
 
 {
@@ -23,7 +23,7 @@ Content-Type: application/json
 ###
 
 
-PUT https://touijxhyv6.execute-api.eu-west-1.amazonaws.com/Prod/
+PUT https://XXXXXXXXXX.execute-api.eu-west-1.amazonaws.com/Prod/
 Content-Type: application/json
 
 {
@@ -36,9 +36,9 @@ Content-Type: application/json
 ###
 
 
-GET https://touijxhyv6.execute-api.eu-west-1.amazonaws.com/Prod/c31ef73a-fbfd-4438-b261-113cefb51bad
+GET https://XXXXXXXXXX.execute-api.eu-west-1.amazonaws.com/Prod/c31ef73a-fbfd-4438-b261-113cefb51bad
 
 ###
 
 
-DELETE https://touijxhyv6.execute-api.eu-west-1.amazonaws.com/Prod/47e431f8-59b8-458b-8acd-52e08a0faa4f
+DELETE https://XXXXXXXXXX.execute-api.eu-west-1.amazonaws.com/Prod/47e431f8-59b8-458b-8acd-52e08a0faa4f

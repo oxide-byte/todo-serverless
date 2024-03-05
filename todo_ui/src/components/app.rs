@@ -1,5 +1,5 @@
 use leptos::*;
-use crate::components::{EditTodoSignal, ShowTodoModalSignal, TodoListSignal};
+use crate::components::{EditTodoSignal, ShowTodoModalSignal};
 use crate::models::Todo;
 use crate::components::todo_modal::TodoModal;
 use crate::components::todo_list_item::TodoListItem;
@@ -8,19 +8,16 @@ use crate::components::todo_service::TodoService;
 #[component]
 pub fn App() -> impl IntoView {
 
-    let todos:TodoListSignal = create_rw_signal(Vec::new());
+    let (todos_refresh, set_todos_refresh) = create_signal(0);
     let show_modal: ShowTodoModalSignal = create_rw_signal(false);
     let edit_todo_item: EditTodoSignal = create_rw_signal(None);
 
-    spawn_local(async move {
+    let todos = create_resource(todos_refresh, |_| async move {
         let todo_service = TodoService::new();
-        let todos_db = todo_service.get_todos().await;
-        match todos_db {
-            Ok(data) => {todos.set(data)}
-            Err(error) => {
-                web_sys::console::log_1(&format!("ERROR: {}",error).into());
-            }
-        }
+        todo_service.get_todos().await.unwrap_or_else(|error| {
+            web_sys::console::log_1(&format!("ERROR: {}",error).into());
+            vec![]
+        })
     });
 
     let callback_add_todo_event = move |todo: Todo| {
@@ -29,14 +26,7 @@ pub fn App() -> impl IntoView {
             let todos_db = todo_service.insert_todo(todo).await;
             show_modal.set(false);
             if todos_db.is_ok() {
-                let todo_service = TodoService::new();
-                let todos_db = todo_service.get_todos().await;
-                match todos_db {
-                    Ok(data) => { todos.set(data) }
-                    Err(error) => {
-                        web_sys::console::log_1(&format!("ERROR: {}", error).into());
-                    }
-                }
+                set_todos_refresh.update(|x| *x += 1);
             }
         });
     };
@@ -47,14 +37,7 @@ pub fn App() -> impl IntoView {
             let todos_db = todo_service.edit_todo(todo).await;
             show_modal.set(false);
             if todos_db.is_ok() {
-                let todo_service = TodoService::new();
-                let todos_db = todo_service.get_todos().await;
-                match todos_db {
-                    Ok(data) => { todos.set(data) }
-                    Err(error) => {
-                        web_sys::console::log_1(&format!("ERROR: {}", error).into());
-                    }
-                }
+                set_todos_refresh.update(|x| *x += 1);
             }
         });
     };
@@ -73,14 +56,7 @@ pub fn App() -> impl IntoView {
             let todo_service = TodoService::new();
             let todos_db = todo_service.delete_todo(todo.id.clone()).await;
             if todos_db.is_ok() {
-                let todo_service = TodoService::new();
-                let todos_db = todo_service.get_todos().await;
-                match todos_db {
-                    Ok(data) => { todos.set(data) }
-                    Err(error) => {
-                        web_sys::console::log_1(&format!("ERROR: {}", error).into());
-                    }
-                }
+                set_todos_refresh.update(|x| *x += 1);
             }
         });
     };
@@ -102,19 +78,20 @@ pub fn App() -> impl IntoView {
             </button>
         </div>
 
-        <Show
-            when=move || { !todos.get().is_empty() }
-            fallback=|| view! { <h2>Currently no Todos defined</h2> }>
-            <h2>Start working</h2>
-
-            <For
-                each=todos
-                key=|item| (item.id.clone(), item.description.clone())
-                let:child
-            >
-            <TodoListItem todo=child on_edit=on_edit_todo_event on_delete=on_delete_todo_event/>
-            </For>
-        </Show>
+        {move || match todos.get() {
+            None => view! { <p>"Loading..."</p> }.into_view(),
+            Some(data) if data.is_empty() => view! {<h2>Currently no Todos defined</h2>}.into_view(),
+            Some(data) => view! {
+                <h2>Start working</h2>
+                <For
+                    each=move || {data.clone()}
+                    key=|item| (item.id.clone(), item.description.clone())
+                    let:child
+                >
+                <TodoListItem todo=child on_edit=on_edit_todo_event on_delete=on_delete_todo_event/>
+                </For>
+            }.into_view()
+        }}
         </div>
 
         <Show when = move || show_modal.get()>

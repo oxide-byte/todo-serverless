@@ -11,7 +11,7 @@ impl TodoService {
 
     pub fn new() -> TodoService {
         TodoService {
-            url: "https://ecfi31myyc.execute-api.eu-west-1.amazonaws.com/Prod/".to_string()
+            url: "https://XXXXXXXXXXX.execute-api.eu-west-1.amazonaws.com/Prod/".to_string()
         }
     }
 
@@ -108,7 +108,8 @@ fn construct_headers() -> HeaderMap {
     let mut headers = HeaderMap::new();
     headers.insert(CONTENT_TYPE, HeaderValue::from_static("application/json"));
     headers.insert(ACCESS_CONTROL_ALLOW_ORIGIN, HeaderValue::from_static("http://localhost:8080"));
-    //headers.insert(ACCESS_CONTROL_ALLOW_HEADERS, HeaderValue::from_static("access-control-allow-headers, access-control-allow-methods, access-control-allow-origin, access-control-allow-credentials, content-type"));
+    // For local tests add this header:
+    // headers.insert(ACCESS_CONTROL_ALLOW_HEADERS, HeaderValue::from_static("access-control-allow-headers, access-control-allow-methods, access-control-allow-origin, access-control-allow-credentials, content-type"));
     headers.insert(ACCESS_CONTROL_ALLOW_METHODS, HeaderValue::from_static("PUT, GET, HEAD, POST, DELETE, OPTIONS"));
     headers.insert(ACCESS_CONTROL_ALLOW_CREDENTIALS,HeaderValue::from_static("true"));
     headers

@@ -9,6 +9,12 @@ pub struct Todo {
     pub created: DateTime<Utc>
 }
 
+impl PartialEq for Todo {
+    fn eq(&self, other: &Self) -> bool {
+        self.id == other.id
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use crate::models::Todo;
