@@ -77,7 +77,7 @@ pub fn App() -> impl IntoView {
                 <i class="fa-solid fa-plus"></i>
             </button>
         </div>
-
+        <Suspense>
         {move || match todos.get() {
             None => view! { <p>"Loading..."</p> }.into_view(),
             Some(data) if data.is_empty() => view! {<h2>Currently no Todos defined</h2>}.into_view(),
@@ -92,6 +92,7 @@ pub fn App() -> impl IntoView {
                 </For>
             }.into_view()
         }}
+        </Suspense>
         </div>
 
         <Show when = move || show_modal.get()>

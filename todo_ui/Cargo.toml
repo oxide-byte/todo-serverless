@@ -7,7 +7,7 @@ license = "MIT"
 [dependencies]
 leptos = { version = "0.6.9", features = ["csr", "nightly"] }
 uuid = { version = "1.7.0", features = ["v4"] }
-chrono = { version = "0.4.34", features = ["serde"] }
-reqwest = { version = "0.11.24", features = ["blocking","json"] }
+chrono = { version = "0.4.35", features = ["serde"] }
+reqwest = { version = "0.11.26", features = ["blocking","json"] }
 serde = {version = "1.0.197", features = ["derive"]}
 serde_json = { version = "1.0.114" }

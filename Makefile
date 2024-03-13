@@ -1,6 +1,6 @@
 STACK_NAME ?= todo-app
 FUNCTIONS := get-todos
-BUCKET_NAME := todo-app-xxx
+BUCKET_NAME := todo-app-xx1
 
 ARCH := aarch64-unknown-linux-gnu
 
